@@ -292,7 +292,7 @@ export default function Gallery({ initialPhotos }: Props) {
               <h2 className="sticky top-0 z-10 bg-stone-50/95 backdrop-blur-sm py-2 text-sm font-bold text-stone-700">
                 {group.label}
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1 sm:gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-3">
                 {group.items.map((photo) => (
                   <PhotoCard
                     key={photo.public_id}

@@ -156,16 +156,35 @@ export function cloudinaryListVideoUrl(tag: string): string {
   return `https://res.cloudinary.com/${publicEnv.CLOUD_NAME}/video/list/${tag}.json`;
 }
 
+function thumbnailUrlAt(
+  publicId: string,
+  resourceType: 'image' | 'video',
+  format: string,
+  width: number,
+): string {
+  const base = `https://res.cloudinary.com/${publicEnv.CLOUD_NAME}`;
+  if (resourceType === 'video') {
+    return `${base}/video/upload/w_${width},q_auto:good,so_0/${publicId}.jpg`;
+  }
+  return `${base}/image/upload/w_${width},q_auto:good,f_auto/${publicId}.${format}`;
+}
+
 export function thumbnailUrl(
   publicId: string,
   resourceType: 'image' | 'video',
   format: string,
 ): string {
-  const base = `https://res.cloudinary.com/${publicEnv.CLOUD_NAME}`;
-  if (resourceType === 'video') {
-    return `${base}/video/upload/w_300,q_auto:eco,so_0/${publicId}.jpg`;
-  }
-  return `${base}/image/upload/w_300,q_auto:eco,f_auto/${publicId}.${format}`;
+  return thumbnailUrlAt(publicId, resourceType, format, 400);
+}
+
+export function thumbnailSrcSet(
+  publicId: string,
+  resourceType: 'image' | 'video',
+  format: string,
+): string {
+  const x1 = thumbnailUrlAt(publicId, resourceType, format, 400);
+  const x2 = thumbnailUrlAt(publicId, resourceType, format, 800);
+  return `${x1} 1x, ${x2} 2x`;
 }
 
 export function fullsizeUrl(

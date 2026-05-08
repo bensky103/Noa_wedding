@@ -69,7 +69,9 @@ export default async function Page() {
   const photos = await fetchInitialPhotos();
   return (
     <main className="min-h-screen pb-32">
-      <Gallery initialPhotos={photos} />
+      <div className="max-w-6xl mx-auto">
+        <Gallery initialPhotos={photos} />
+      </div>
       <AdminGate />
       <UploadFab />
       <UploadQueue />

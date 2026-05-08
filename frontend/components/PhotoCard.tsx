@@ -1,6 +1,6 @@
 'use client';
 
-import { thumbnailUrl, type Photo } from '@/lib/cloudinary';
+import { thumbnailUrl, thumbnailSrcSet, type Photo } from '@/lib/cloudinary';
 
 type Props = {
   photo: Photo;
@@ -21,17 +21,19 @@ export default function PhotoCard({
   const caption = photo.context?.custom?.caption;
   const isVideo = photo.resource_type === 'video';
   const src = thumbnailUrl(photo.public_id, photo.resource_type, photo.format);
+  const srcSet = thumbnailSrcSet(photo.public_id, photo.resource_type, photo.format);
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="relative aspect-square w-full overflow-hidden bg-stone-200 group focus:outline-none focus:ring-2 focus:ring-rose-500"
+      className="relative aspect-square w-full overflow-hidden rounded-lg bg-stone-200 shadow-sm ring-1 ring-stone-200 group transition hover:shadow-md hover:ring-stone-300 focus:outline-none focus:ring-2 focus:ring-rose-500"
       aria-label={caption || uploader || 'תמונה'}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
+        srcSet={srcSet}
         alt={caption ?? uploader ?? ''}
         loading="lazy"
         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
