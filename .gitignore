@@ -1,0 +1,5 @@
+# Defense-in-depth: even though frontend/.gitignore covers these,
+# any .env at this level should never be tracked either.
+.env
+.env*.local
+!.env.example
