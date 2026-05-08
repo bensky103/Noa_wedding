@@ -131,7 +131,7 @@ export default function UploadFab() {
       <input
         ref={cameraRef}
         type="file"
-        accept="image/*,video/*"
+        accept="image/*"
         capture="environment"
         hidden
         onChange={(e) => {
