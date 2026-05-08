@@ -1,12 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  cloudinaryListUrl,
-  cloudinaryListVideoUrl,
-  type Photo,
-} from '@/lib/cloudinary';
-import { publicEnv } from '@/lib/env';
+import { type Photo } from '@/lib/cloudinary';
 import { subscribeToUploads } from '@/lib/upload-queue';
 import PhotoCard from './PhotoCard';
 import Lightbox from './Lightbox';
@@ -18,17 +13,6 @@ const dateFormatter = new Intl.DateTimeFormat('he-IL', {
   day: 'numeric',
   month: 'long',
 });
-
-type ListResponseItem = {
-  public_id: string;
-  format?: string;
-  width?: number;
-  height?: number;
-  created_at?: string;
-  resource_type?: 'image' | 'video';
-  context?: { custom?: { uploader?: string; caption?: string } };
-  bytes?: number;
-};
 
 function dedupe(photos: Photo[]): Photo[] {
   const seen = new Set<string>();
@@ -48,26 +32,12 @@ function sortByCreated(photos: Photo[]): Photo[] {
   );
 }
 
-async function fetchClientList(
-  url: string,
-  resourceType: 'image' | 'video',
-): Promise<Photo[]> {
+async function fetchPhotos(): Promise<Photo[]> {
   try {
-    const res = await fetch(url, { cache: 'no-store' });
-    if (res.status === 404) return [];
+    const res = await fetch('/api/photos', { cache: 'no-store' });
     if (!res.ok) return [];
-    const data = (await res.json()) as { resources?: ListResponseItem[] };
-    if (!data.resources) return [];
-    return data.resources.map((r) => ({
-      public_id: r.public_id,
-      resource_type: r.resource_type ?? resourceType,
-      format: r.format ?? '',
-      width: r.width ?? 0,
-      height: r.height ?? 0,
-      created_at: r.created_at ?? new Date().toISOString(),
-      context: r.context,
-      bytes: r.bytes,
-    }));
+    const data = (await res.json()) as { photos?: Photo[] };
+    return data.photos ?? [];
   } catch {
     return [];
   }
@@ -138,18 +108,14 @@ export default function Gallery({ initialPhotos }: Props) {
   const intervalRef = useRef<number | null>(null);
   useEffect(() => {
     let cancelled = false;
-    const tag = publicEnv.WEDDING_TAG;
 
     const poll = async () => {
       if (document.hidden) return;
-      const [imgs, vids] = await Promise.all([
-        fetchClientList(cloudinaryListUrl(tag), 'image'),
-        fetchClientList(cloudinaryListVideoUrl(tag), 'video'),
-      ]);
+      const fetched = await fetchPhotos();
       if (cancelled) return;
       setPhotos((current) => {
         const known = new Set(current.map((p) => p.public_id));
-        const merged = sortByCreated(dedupe([...current, ...imgs, ...vids]));
+        const merged = sortByCreated(dedupe([...current, ...fetched]));
         const newIds = merged
           .filter((p) => !known.has(p.public_id))
           .map((p) => p.public_id);
