@@ -60,6 +60,13 @@ function buildContext(uploader: string, caption?: string): string {
 // Browser upload — uses XHR for upload-progress reporting
 // =====================================================================
 
+function presetForFile(file: File): string {
+  if (file.type.startsWith('video/') && publicEnv.UPLOAD_PRESET_VIDEO) {
+    return publicEnv.UPLOAD_PRESET_VIDEO;
+  }
+  return publicEnv.UPLOAD_PRESET;
+}
+
 export function uploadToCloudinary(
   file: File,
   opts: {
@@ -73,7 +80,7 @@ export function uploadToCloudinary(
     const url = `https://api.cloudinary.com/v1_1/${publicEnv.CLOUD_NAME}/auto/upload`;
     const form = new FormData();
     form.append('file', file);
-    form.append('upload_preset', publicEnv.UPLOAD_PRESET);
+    form.append('upload_preset', presetForFile(file));
     form.append('tags', publicEnv.WEDDING_TAG);
     form.append('context', buildContext(opts.uploader, opts.caption));
 

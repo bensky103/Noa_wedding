@@ -13,6 +13,10 @@ const publicSchema = z.object({
   UPLOAD_PRESET: z
     .string()
     .min(1, 'NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET is required'),
+  UPLOAD_PRESET_VIDEO: z
+    .string()
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : undefined)),
   WEDDING_TAG: z.string().min(1).default('noa-2026'),
   MAX_UPLOADS_PER_USER: z.coerce.number().int().positive().default(15),
 });
@@ -36,6 +40,7 @@ function parsePublicEnv(): PublicEnv {
   cachedPublicEnv = publicSchema.parse({
     CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
     UPLOAD_PRESET: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+    UPLOAD_PRESET_VIDEO: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET_VIDEO,
     WEDDING_TAG: process.env.NEXT_PUBLIC_WEDDING_TAG,
     MAX_UPLOADS_PER_USER: process.env.NEXT_PUBLIC_MAX_UPLOADS_PER_USER,
   });
