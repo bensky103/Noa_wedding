@@ -96,17 +96,25 @@ export default function Gallery({ initialPhotos }: Props) {
   const [newPhotoIds, setNewPhotoIds] = useState<Set<string>>(new Set());
   const adminKeyRef = useRef<string | null>(null);
 
-  // Detect admin once on mount.
+  // Detect admin on mount, and react to admin-mode changes from AdminGate.
   useEffect(() => {
-    try {
-      const key = window.sessionStorage.getItem('noa.adminKey');
-      if (key) {
-        adminKeyRef.current = key;
-        setIsAdmin(true);
+    const sync = () => {
+      try {
+        const key = window.sessionStorage.getItem('noa.adminKey');
+        if (key) {
+          adminKeyRef.current = key;
+          setIsAdmin(true);
+        } else {
+          adminKeyRef.current = null;
+          setIsAdmin(false);
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
-    }
+    };
+    sync();
+    window.addEventListener('noa:admin-changed', sync);
+    return () => window.removeEventListener('noa:admin-changed', sync);
   }, []);
 
   // Mark IDs as "new" and clear after NEW_BADGE_MS.

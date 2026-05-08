@@ -8,6 +8,7 @@ import Gallery from '@/components/Gallery';
 import UploadFab from '@/components/UploadFab';
 import UploadQueue from '@/components/UploadQueue';
 import NameGateController from '@/components/NameGateController';
+import AdminGate from '@/components/AdminGate';
 
 export const revalidate = 30;
 
@@ -69,6 +70,7 @@ export default async function Page() {
   return (
     <main className="min-h-screen pb-32">
       <Gallery initialPhotos={photos} />
+      <AdminGate />
       <UploadFab />
       <UploadQueue />
       <NameGateController />
