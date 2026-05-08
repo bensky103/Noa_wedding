@@ -181,12 +181,25 @@ export default function Gallery({ initialPhotos }: Props) {
       const key = adminKeyRef.current;
       if (!key) return;
       try {
-        const url = `/api/photos/${encodeURIComponent(photo.public_id)}?resource_type=${photo.resource_type}`;
+        // Cloudinary public_ids contain slashes when uploads use a folder
+        // preset. The DELETE route is a catch-all, so we keep slashes as
+        // path separators and only encode characters within each segment.
+        const path = photo.public_id
+          .split('/')
+          .map(encodeURIComponent)
+          .join('/');
+        const url = `/api/photos/${path}?resource_type=${photo.resource_type}`;
         const res = await fetch(url, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${key}` },
         });
-        if (res.ok || res.status === 404) {
+        if (res.ok) {
+          setPhotos((current) =>
+            current.filter((p) => p.public_id !== photo.public_id),
+          );
+          setLightboxPublicId(null);
+        } else if (res.status === 404) {
+          // Cloudinary already says it's gone — treat as already-deleted.
           setPhotos((current) =>
             current.filter((p) => p.public_id !== photo.public_id),
           );

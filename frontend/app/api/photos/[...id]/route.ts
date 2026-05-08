@@ -16,14 +16,17 @@ function isAuthorized(header: string | null): boolean {
 
 export async function DELETE(
   req: NextRequest,
-  ctx: { params: Promise<{ id: string }> },
+  ctx: { params: Promise<{ id: string[] }> },
 ): Promise<Response> {
   if (!isAuthorized(req.headers.get('authorization'))) {
     return Response.json({ error: 'forbidden' }, { status: 403 });
   }
 
   const { id } = await ctx.params;
-  const publicId = decodeURIComponent(id);
+  // Catch-all route: id is the URL-decoded path segments. Cloudinary
+  // public_ids may contain slashes when an upload preset specifies a folder
+  // (e.g., "noa-2026/abc123"), so we rejoin with /.
+  const publicId = id.join('/');
 
   const rt = req.nextUrl.searchParams.get('resource_type') ?? 'image';
   if (rt !== 'image' && rt !== 'video') {
