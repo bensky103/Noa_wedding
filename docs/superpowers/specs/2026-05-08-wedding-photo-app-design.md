@@ -109,7 +109,8 @@ app/
 ├── globals.css               Tailwind base + RTL utilities.
 ├── page.tsx                  Server Component (ISR revalidate: 30). Fetches initial
 │                             photo list, hydrates <Gallery />.
-├── admin/page.tsx            Reads ?key= from URL, validates, sets sessionStorage.
+├── api/admin/auth/route.ts  POST only. Validates admin key against ADMIN_KEY env
+│                             via constant-time compare; used by <AdminGate />.
 └── api/photos/[id]/route.ts  DELETE only. Validates Bearer token, calls Cloudinary
                               destroy with invalidate=true.
 
@@ -122,7 +123,10 @@ components/
 ├── Gallery.tsx               Client component. Polls Cloudinary list every 30s.
 │                             Virtualized lazy-loaded grid with date dividers.
 ├── PhotoCard.tsx             One grid tile. Shows trash icon if admin.
-└── Lightbox.tsx              Full-size view. Caption + uploader. Download button.
+├── Lightbox.tsx              Full-size view. Caption + uploader. Download button.
+└── AdminGate.tsx             Floating gear icon → modal that POSTs admin key to
+                              /api/admin/auth. On 200, stores key in sessionStorage
+                              and dispatches `noa:admin-changed` so Gallery refreshes.
 
 lib/
 ├── cloudinary.ts             uploadToCloudinary(file, ctx) — browser, unsigned preset.
@@ -174,7 +178,7 @@ lib/
 4. On resume → immediate fetch, then resume interval.
 
 ### 6.4 Admin delete
-1. Sister opens `/admin?key=<token>` → reads `?key=`, stores in `sessionStorage.adminKey`, redirects to `/`.
+1. Sister taps the gear icon in the top corner of `/` → modal prompts for the admin key → submits to `POST /api/admin/auth`. On 200 the key is stored in `sessionStorage.adminKey` and a `noa:admin-changed` event refreshes the gallery into admin mode.
 2. Gallery sees `adminKey` → renders trash overlay on each `<PhotoCard>`.
 3. Tap trash → confirm dialog "מחק את התמונה הזו?".
 4. On confirm: `DELETE /api/photos/<id>` with `Authorization: Bearer <adminKey>`.
