@@ -4,6 +4,57 @@
 
 import { createHash } from 'node:crypto';
 import { publicEnv, serverEnv } from './env';
+import type { Photo } from './cloudinary';
+
+type AdminApiResource = {
+  public_id: string;
+  format?: string;
+  width?: number;
+  height?: number;
+  created_at?: string;
+  resource_type?: 'image' | 'video';
+  bytes?: number;
+  context?: { custom?: { uploader?: string; caption?: string } };
+};
+
+export async function listResourcesByTag(
+  tag: string,
+  resourceType: 'image' | 'video',
+): Promise<Photo[]> {
+  const auth = Buffer.from(
+    `${serverEnv.CLOUDINARY_API_KEY}:${serverEnv.CLOUDINARY_API_SECRET}`,
+  ).toString('base64');
+
+  const params = new URLSearchParams({
+    max_results: '500',
+    context: 'true',
+  });
+
+  const url =
+    `https://api.cloudinary.com/v1_1/${publicEnv.CLOUD_NAME}` +
+    `/resources/${resourceType}/tags/${encodeURIComponent(tag)}?${params}`;
+
+  const res = await fetch(url, {
+    headers: { Authorization: `Basic ${auth}` },
+    next: { revalidate: 30 },
+  });
+
+  if (!res.ok) return [];
+
+  const data = (await res.json()) as { resources?: AdminApiResource[] };
+  if (!data.resources) return [];
+
+  return data.resources.map((r) => ({
+    public_id: r.public_id,
+    resource_type: r.resource_type ?? resourceType,
+    format: r.format ?? '',
+    width: r.width ?? 0,
+    height: r.height ?? 0,
+    created_at: r.created_at ?? new Date().toISOString(),
+    context: r.context,
+    bytes: r.bytes,
+  }));
+}
 
 export async function destroyAsset(
   publicId: string,

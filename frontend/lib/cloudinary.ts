@@ -155,14 +155,6 @@ export function uploadToCloudinary(
 // Pure URL helpers (browser-safe)
 // =====================================================================
 
-export function cloudinaryListUrl(tag: string): string {
-  return `https://res.cloudinary.com/${publicEnv.CLOUD_NAME}/image/list/${tag}.json`;
-}
-
-export function cloudinaryListVideoUrl(tag: string): string {
-  return `https://res.cloudinary.com/${publicEnv.CLOUD_NAME}/video/list/${tag}.json`;
-}
-
 function thumbnailUrlAt(
   publicId: string,
   resourceType: 'image' | 'video',
