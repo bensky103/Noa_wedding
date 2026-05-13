@@ -253,7 +253,7 @@ export default function Gallery({ initialPhotos }: Props) {
     <div className="px-3 sm:px-6">
       <header className="text-center pt-8 pb-6">
         <h1 className="text-3xl sm:text-4xl font-bold text-stone-900">
-          האלבום של נועה ❤️
+          החתונה של נועה ויובל ❤️
         </h1>
         <p className="text-sm sm:text-base text-stone-500 mt-2">
           כל התמונות שהאורחים שלנו צילמו

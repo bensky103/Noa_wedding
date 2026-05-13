@@ -8,8 +8,8 @@ const heebo = Heebo({
 });
 
 export const metadata: Metadata = {
-  title: 'האלבום של נועה',
-  description: 'אלבום משותף לתמונות וסרטונים מהחתונה של נועה',
+  title: 'החתונה של נועה ויובל',
+  description: 'אלבום משותף לתמונות וסרטונים מהחתונה של נועה ויובל',
 };
 
 export default function RootLayout({

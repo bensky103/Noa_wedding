@@ -44,7 +44,7 @@ export default function NameGate({ open, onClose, required }: Props) {
         className="w-full max-w-sm rounded-2xl bg-white shadow-xl p-6 space-y-4"
       >
         <h2 className="text-xl font-bold text-stone-900 text-center">
-          ברוכים הבאים לחתונה של נועה ❤️
+          ברוכים הבאים לחתונה של נועה ויובל ❤️
         </h2>
         <p className="text-sm text-stone-600 text-center">
           מי אתם? נשמח שהשם שלכם יופיע ליד התמונות שתעלו
